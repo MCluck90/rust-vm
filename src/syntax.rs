@@ -15,12 +15,18 @@ fn error_message(expected: &str, token: &Token) -> Option<String> {
 
 pub fn verify(mut tokens: Tokenizer) -> Option<String> {
     let mut token = tokens.next();
+    let mut prev_label = false;
     while token.is_some() {
         let t = token.unwrap();
         match &t.token_type {
             &TokenType::Label(_) => {
                 token = tokens.next();
-                continue;
+                if !prev_label {
+                    prev_label = true;
+                    continue;
+                } else {
+                    return error_message("a label, directive, or instruction", &t);
+                }
             },
             &TokenType::Directive(ref directive) => {
                 let result = verify_directive(&mut tokens, directive);
@@ -38,6 +44,7 @@ pub fn verify(mut tokens: Tokenizer) -> Option<String> {
                 return error_message("a label, directive, or instruction", &t);
             }
         };
+        prev_label = false;
         token = tokens.next();
     }
     None
