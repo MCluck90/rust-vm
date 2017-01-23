@@ -1,4 +1,3 @@
-use std::fmt::format;
 use tokenizer::DirectiveType;
 use tokenizer::InstructionType;
 use tokenizer::Token;
@@ -58,19 +57,18 @@ fn verify_directive(tokens: &mut Tokenizer, directive: &DirectiveType) -> Option
     let next_token = next_token.unwrap();
     match directive {
         &DirectiveType::Byte => {
-            return match &next_token.token_type {
+            match &next_token.token_type {
                 &TokenType::Character(_) => None,
                 _ => error_message("an ASCII character", &next_token)
             }
         },
         &DirectiveType::Word => {
-            return match &next_token.token_type {
+            match &next_token.token_type {
                 &TokenType::Integer(_) => None,
                 _ => error_message("an integer", &next_token)
             }
         }
-    };
-    None
+    }
 }
 
 fn verify_instruction(tokens: &mut Tokenizer, instruction: &InstructionType) -> Option<String> {
@@ -90,13 +88,13 @@ fn verify_instruction(tokens: &mut Tokenizer, instruction: &InstructionType) -> 
     let next_token = next_token.unwrap();
     match instruction {
         &InstructionType::Jump => {
-            return match &next_token.token_type {
+            match &next_token.token_type {
                 &TokenType::Label(_) => None,
                 _ => error_message("a label", &next_token)
             }
         },
         &InstructionType::JumpRelative => {
-            return match &next_token.token_type {
+            match &next_token.token_type {
                 &TokenType::Register(_) => None,
                 _ => error_message("a register", &next_token)
             }
@@ -116,7 +114,7 @@ fn verify_instruction(tokens: &mut Tokenizer, instruction: &InstructionType) -> 
             }
             let second_op = second_op.unwrap();
 
-            return match &next_token.token_type {
+            match &next_token.token_type {
                 &TokenType::Register(_) => match &second_op.token_type {
                     &TokenType::Label(_) => None,
                     _ => error_message("a label", &second_op)
@@ -138,7 +136,7 @@ fn verify_instruction(tokens: &mut Tokenizer, instruction: &InstructionType) -> 
             }
             let second_op = second_op.unwrap();
 
-            return match &next_token.token_type {
+            match &next_token.token_type {
                 &TokenType::Register(_) => match &second_op.token_type {
                     &TokenType::Register(_) => None,
                     _ => error_message("a register", &second_op)
@@ -154,7 +152,7 @@ fn verify_instruction(tokens: &mut Tokenizer, instruction: &InstructionType) -> 
             }
             let second_op = second_op.unwrap();
 
-            return match &next_token.token_type {
+            match &next_token.token_type {
                 &TokenType::Register(_) => match &second_op.token_type {
                     &TokenType::Register(_) |
                     &TokenType::Integer(_) => None,
@@ -170,7 +168,6 @@ fn verify_instruction(tokens: &mut Tokenizer, instruction: &InstructionType) -> 
         &InstructionType::InputInteger |
         &InstructionType::ConvertASCIIToInteger |
         &InstructionType::ConvertIntegerToASCII |
-        &InstructionType::End => return None
-    };
-    None
+        &InstructionType::End => None
+    }
 }

@@ -1,6 +1,10 @@
+use std::collections::HashMap;
+
+use tokenizer::ByteCode;
 use tokenizer::InstructionType;
 use tokenizer::DirectiveType;
 use tokenizer::Token;
+use tokenizer::TokenType;
 use tokenizer::Tokenizer;
 
 #[derive(Debug, PartialEq)]
@@ -43,6 +47,40 @@ impl Command {
                 self.is_instruction_complete(&instruction),
             _ => false
         }
+    }
+
+    pub fn to_bytes(&self, label_table: &HashMap<String, i32>) -> [i32; 3] {
+        let mut result = [0, 0, 0];
+        result[0] = match &self.cmd_type {
+            &CommandType::Directive(ref directive) => directive.to_bytecode(),
+            &CommandType::Instruction(ref instruction) => instruction.to_bytecode(),
+            &CommandType::Unknown => unreachable!()
+        };
+        result[1] = match &self.operand1.token_type {
+            &TokenType::Character(c) => (c as u8) as i32,
+            &TokenType::Integer(val) => val,
+            &TokenType::Register(ref reg) => reg.to_bytecode(),
+            &TokenType::Label(ref label) => match label_table.get(label) {
+                Some(offset) => offset.clone(),
+
+                // TODO: Better error handling
+                None => panic!("Unknown label")
+            },
+            _ => 0,
+        };
+        result[2] = match &self.operand2.token_type {
+            &TokenType::Character(c) => (c as u8) as i32,
+            &TokenType::Integer(val) => val,
+            &TokenType::Register(ref reg) => reg.to_bytecode(),
+            &TokenType::Label(ref label) => match label_table.get(label) {
+                Some(offset) => offset.clone(),
+
+                // TODO: Better error handling
+                None => panic!("Unknown label")
+            },
+            _ => 0,
+        };
+        result
     }
 
     fn is_directive_complete(&self) -> bool {
@@ -88,12 +126,14 @@ impl Command {
 pub struct Assembler;
 
 impl Assembler {
-    pub fn to_commands(tokens: Tokenizer) -> Vec<Command> {
-        // TODO: Add a syntax verification step
+    pub fn to_commands(tokens: Tokenizer) -> (HashMap<String, i32>, Vec<Command>) {
+        let mut label_addresses = HashMap::new();
+        let mut offset = 0;
         let mut commands: Vec<Command> = Vec::new();
         let mut command = Command::new();
         for token in tokens {
             if command.is_complete() {
+                offset += 12;
                 commands.push(command);
                 command = Command::new();
             }
@@ -108,6 +148,9 @@ impl Assembler {
                 },
                 Label(_) => {
                     if command.cmd_type == CommandType::Unknown {
+                        if let Label(ref label) = token.token_type {
+                            label_addresses.insert(label.to_string(), offset);
+                        }
                         command.label = token;
                     } else {
                         command.add_operand(token);
@@ -121,6 +164,6 @@ impl Assembler {
         if command.is_complete() {
             commands.push(command);
         }
-        commands
+        (label_addresses, commands)
     }
 }

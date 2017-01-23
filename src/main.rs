@@ -14,13 +14,11 @@ fn main() {
             println!("{}", err);
             return;
         }
-        println!("Syntax: passed");
-        /*
         let tokenizer = Tokenizer::new(&filename);
-        let commands = Assembler::to_commands(tokenizer);
+        let (label_table, commands) = Assembler::to_commands(tokenizer);
         for command in commands {
-            println!("{:?}", command);
-        }*/
+            println!("{:?}", command.to_bytes(&label_table));
+        }
     } else {
         panic!("Must provide an input file");
     }

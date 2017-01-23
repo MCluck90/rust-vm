@@ -1,14 +1,37 @@
 use std::fmt;
+use std::marker;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Lines;
 use std::iter::Iterator;
 
+pub trait ByteCode where Self: marker::Sized {
+    fn to_bytecode(&self) -> i32;
+    fn from_bytecode(i32) -> Option<Self>;
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum DirectiveType {
     Byte,
     Word
+}
+
+impl ByteCode for DirectiveType {
+    fn to_bytecode(&self) -> i32 {
+        match self {
+            &DirectiveType::Byte => 0,
+            &DirectiveType::Word => 1
+        }
+    }
+
+    fn from_bytecode(code: i32) -> Option<DirectiveType> {
+        match code {
+            0 => Some(DirectiveType::Byte),
+            1 => Some(DirectiveType::Word),
+            _ => None
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -46,6 +69,82 @@ pub enum InstructionType {
     Equal
 }
 
+impl ByteCode for InstructionType {
+    fn to_bytecode(&self) -> i32 {
+        match self {
+            &InstructionType::End => 2,
+            &InstructionType::OutputInteger => 3,
+            &InstructionType::InputInteger => 4,
+            &InstructionType::OutputASCII => 5,
+            &InstructionType::InputASCII => 6,
+            &InstructionType::ConvertASCIIToInteger => 7,
+            &InstructionType::ConvertIntegerToASCII => 8,
+
+            &InstructionType::Jump => 9,
+            &InstructionType::JumpRelative => 10,
+            &InstructionType::NonZeroJump => 11,
+            &InstructionType::GreaterThanZeroJump => 12,
+            &InstructionType::LessThanZeroJump => 13,
+            &InstructionType::EqualZeroJump => 14,
+
+            &InstructionType::Move => 15,
+            &InstructionType::LoadAddress => 16,
+            &InstructionType::StoreWord => 17,
+            &InstructionType::LoadWord => 18,
+            &InstructionType::StoreByte => 19,
+            &InstructionType::LoadByte => 20,
+
+            // TODO: Fix Add immediate
+            &InstructionType::Add => 21,
+            &InstructionType::Subtract => 22,
+            &InstructionType::Multiply => 23,
+            &InstructionType::Divide => 24,
+
+            &InstructionType::And => 25,
+            &InstructionType::Or => 26,
+
+            &InstructionType::Equal => 27
+        }
+    }
+
+    fn from_bytecode(code: i32) -> Option<InstructionType> {
+        match code {
+            2 => Some(InstructionType::End),
+            3 => Some(InstructionType::OutputInteger),
+            4 => Some(InstructionType::InputInteger),
+            5 => Some(InstructionType::OutputASCII),
+            6 => Some(InstructionType::InputASCII),
+            7 => Some(InstructionType::ConvertASCIIToInteger),
+            8 => Some(InstructionType::ConvertIntegerToASCII),
+
+            9 => Some(InstructionType::Jump),
+            10 => Some(InstructionType::JumpRelative),
+            11 => Some(InstructionType::NonZeroJump),
+            12 => Some(InstructionType::GreaterThanZeroJump),
+            13 => Some(InstructionType::LessThanZeroJump),
+            14 => Some(InstructionType::EqualZeroJump),
+
+            15 => Some(InstructionType::Move),
+            16 => Some(InstructionType::LoadAddress),
+            17 => Some(InstructionType::StoreWord),
+            18 => Some(InstructionType::LoadWord),
+            19 => Some(InstructionType::StoreByte),
+            20 => Some(InstructionType::LoadByte),
+
+            21 => Some(InstructionType::Add),
+            22 => Some(InstructionType::Subtract),
+            23 => Some(InstructionType::Multiply),
+            24 => Some(InstructionType::Divide),
+
+            25 => Some(InstructionType::And),
+            26 => Some(InstructionType::Or),
+
+            27 => Some(InstructionType::Equal),
+            _ => None
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum Register {
     Reg0,
@@ -63,9 +162,48 @@ pub enum Register {
     SB
 }
 
+impl ByteCode for Register {
+    fn to_bytecode(&self) -> i32 {
+        match self {
+            &Register::Reg0 => 0,
+            &Register::Reg1 => 1,
+            &Register::Reg2 => 2,
+            &Register::Reg3 => 3,
+            &Register::Reg4 => 4,
+            &Register::Reg5 => 5,
+            &Register::Reg6 => 6,
+            &Register::IO => 7,
+            &Register::PC => 8,
+            &Register::SL => 9,
+            &Register::SP => 10,
+            &Register::FP => 11,
+            &Register::SB => 12,
+        }
+    }
+
+    fn from_bytecode(code: i32) -> Option<Register> {
+        match code {
+            0 => Some(Register::Reg0),
+            1 => Some(Register::Reg1),
+            2 => Some(Register::Reg2),
+            3 => Some(Register::Reg3),
+            4 => Some(Register::Reg4),
+            5 => Some(Register::Reg5),
+            6 => Some(Register::Reg6),
+            7 => Some(Register::IO),
+            8 => Some(Register::PC),
+            9 => Some(Register::SL),
+            10 => Some(Register::SP),
+            11 => Some(Register::FP),
+            12 => Some(Register::SB),
+            _ => None
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum TokenType {
-    Character(String),
+    Character(char),
     Directive(DirectiveType),
     Instruction(InstructionType),
     Integer(i32),
@@ -389,7 +527,7 @@ impl Iterator for Tokenizer {
                             if token.chars().nth(0).unwrap() == '\'' &&
                                token.chars().nth(token.len() - 1).unwrap() == '\'' {
                                Token::new(
-                                   TokenType::Character(token.to_string()),
+                                   TokenType::Character(token.chars().nth(1).unwrap()),
                                    self.line_number
                                )
                             } else if num.is_ok() {
