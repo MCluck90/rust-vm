@@ -1,6 +1,6 @@
 # Directives
-.byte 'A'
-.word 10
+labelA .byte 'A'
+labelB .word 10
 
 # Jumps
 JMP label         # JMP

@@ -4,13 +4,13 @@ use std::io::BufReader;
 use std::io::Lines;
 use std::iter::Iterator;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum DirectiveType {
     Byte,
     Word
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum InstructionType {
     End,
     OutputInteger,
@@ -45,7 +45,7 @@ pub enum InstructionType {
     Equal
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Register {
     Reg0,
     Reg1,
@@ -62,14 +62,15 @@ pub enum Register {
     SB
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Token {
     Character(String),
     Directive(DirectiveType),
     Instruction(InstructionType),
     Integer(i32),
     Register(Register),
-    Label(String)
+    Label(String),
+    None
 }
 
 pub struct Tokenizer {
