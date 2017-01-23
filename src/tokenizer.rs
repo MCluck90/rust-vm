@@ -12,6 +12,14 @@ pub enum DirectiveType {
 
 #[derive(Clone, Debug)]
 pub enum InstructionType {
+    End,
+    OutputInteger,
+    InputInteger,
+    OutputASCII,
+    InputASCII,
+    ConvertASCIIToInteger,
+    ConvertIntegerToASCII,
+
     Jump,
     JumpRelative,
     NonZeroJump,
@@ -149,6 +157,14 @@ impl Iterator for Tokenizer {
                         "sp" => Token::Register(Register::SP),
                         "fp" => Token::Register(Register::FP),
                         "sb" => Token::Register(Register::SB),
+
+                        "END" => Token::Instruction(InstructionType::End),
+                        "OUT" => Token::Instruction(InstructionType::OutputInteger),
+                        "IN" => Token::Instruction(InstructionType::InputInteger),
+                        "ASCO" => Token::Instruction(InstructionType::OutputASCII),
+                        "ASCI" => Token::Instruction(InstructionType::InputASCII),
+                        "A2I" => Token::Instruction(InstructionType::ConvertASCIIToInteger),
+                        "I2A" => Token::Instruction(InstructionType::ConvertIntegerToASCII),
 
                         _ =>  {
                             let num = token.parse::<i32>();

@@ -31,3 +31,12 @@ LDB reg_1 label   # LDB
 
 # Compare
 == reg_1 reg_2
+
+# Commands
+OUT   # Output number (IO register)
+IN    # Get number over stdin (IO register)
+ASCO  # Output an ASCII character (IO register)
+ASCI  # Get ASCII character over stdin (IO register)
+A2I   # ASCII to Integer (IO register)
+I2A   # Integer to ASCII (IO register)
+END   # End the program
