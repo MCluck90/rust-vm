@@ -22,6 +22,11 @@ pub struct Command {
     pub operand2: Token
 }
 
+pub enum ByteCodeData {
+    Directive(i32),
+    Instruction([i32; 3])
+}
+
 impl Command {
     pub fn new() -> Command {
         Command {
@@ -49,38 +54,44 @@ impl Command {
         }
     }
 
-    pub fn to_bytes(&self, label_table: &HashMap<String, i32>) -> [i32; 3] {
-        let mut result = [0, 0, 0];
-        result[0] = match &self.cmd_type {
-            &CommandType::Directive(ref directive) => directive.to_bytecode(),
-            &CommandType::Instruction(ref instruction) => instruction.to_bytecode(),
+    pub fn to_bytecode(&self, label_table: &HashMap<String, i32>) -> ByteCodeData {
+        match &self.cmd_type {
+            &CommandType::Directive(_) => match &self.operand1.token_type {
+                &TokenType::Character(c) => ByteCodeData::Directive((c as u8) as i32),
+                &TokenType::Integer(val) => ByteCodeData::Directive(val),
+                _ => unreachable!()
+            },
+            &CommandType::Instruction(ref instruction) => {
+                let mut result = [0, 0, 0];
+                result[0] = instruction.to_bytecode();
+                result[1] = match &self.operand1.token_type {
+                    &TokenType::Character(c) => (c as u8) as i32,
+                    &TokenType::Integer(val) => val,
+                    &TokenType::Register(ref reg) => reg.to_bytecode(),
+                    &TokenType::Label(ref label) => match label_table.get(label) {
+                        Some(offset) => offset.clone(),
+
+                        // TODO: Better error handling
+                        None => panic!("Unknown label")
+                    },
+                    _ => 0,
+                };
+                result[2] = match &self.operand2.token_type {
+                    &TokenType::Character(c) => (c as u8) as i32,
+                    &TokenType::Integer(val) => val,
+                    &TokenType::Register(ref reg) => reg.to_bytecode(),
+                    &TokenType::Label(ref label) => match label_table.get(label) {
+                        Some(offset) => offset.clone(),
+
+                        // TODO: Better error handling
+                        None => panic!("Unknown label")
+                    },
+                    _ => 0,
+                };
+                ByteCodeData::Instruction(result)
+            },
             &CommandType::Unknown => unreachable!()
-        };
-        result[1] = match &self.operand1.token_type {
-            &TokenType::Character(c) => (c as u8) as i32,
-            &TokenType::Integer(val) => val,
-            &TokenType::Register(ref reg) => reg.to_bytecode(),
-            &TokenType::Label(ref label) => match label_table.get(label) {
-                Some(offset) => offset.clone(),
-
-                // TODO: Better error handling
-                None => panic!("Unknown label")
-            },
-            _ => 0,
-        };
-        result[2] = match &self.operand2.token_type {
-            &TokenType::Character(c) => (c as u8) as i32,
-            &TokenType::Integer(val) => val,
-            &TokenType::Register(ref reg) => reg.to_bytecode(),
-            &TokenType::Label(ref label) => match label_table.get(label) {
-                Some(offset) => offset.clone(),
-
-                // TODO: Better error handling
-                None => panic!("Unknown label")
-            },
-            _ => 0,
-        };
-        result
+        }
     }
 
     fn is_directive_complete(&self) -> bool {
@@ -165,5 +176,32 @@ impl Assembler {
             commands.push(command);
         }
         (label_addresses, commands)
+    }
+
+    pub fn to_bytecode(label_table: HashMap<String, i32>, commands: Vec<Command>) -> (usize, Vec<i32>) {
+        let mut bytecode = vec![0; 10_000];
+        let mut offset = 0;
+        let mut start: usize = 0;
+        let mut found_start = false;
+        for command in commands {
+            let code = command.to_bytecode(&label_table);
+            match code {
+                ByteCodeData::Directive(data) => {
+                    bytecode[offset] = data;
+                    offset += 1;
+                },
+                ByteCodeData::Instruction(data) => {
+                    if !found_start {
+                        start = offset;
+                        found_start = true;
+                    }
+                    bytecode[offset]     = data[0];
+                    bytecode[offset + 1] = data[1];
+                    bytecode[offset + 2] = data[2];
+                    offset += 1;
+                }
+            };
+        }
+        (start, bytecode)
     }
 }

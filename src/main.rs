@@ -16,8 +16,18 @@ fn main() {
         }
         let tokenizer = Tokenizer::new(&filename);
         let (label_table, commands) = Assembler::to_commands(tokenizer);
-        for command in commands {
-            println!("{:?}", command.to_bytes(&label_table));
+        let (start, bytecode) = Assembler::to_bytecode(label_table, commands);
+        let mut i: usize = 0;
+        println!("DATA");
+        while i < start {
+            println!("{}", bytecode[i]);
+            i += 1;
+        }
+
+        println!("\nInstructions");
+        while bytecode[i] != 0 {
+            println!("{} {} {}", bytecode[i], bytecode[i + 1], bytecode[i + 2]);
+            i += 3;
         }
     } else {
         panic!("Must provide an input file");
