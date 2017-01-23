@@ -94,6 +94,16 @@ impl Command {
         }
     }
 
+    pub fn from_bytecode(code: &[i32; 3]) -> Command {
+        let mut command = Command::new();
+        if let Some(directive) = DirectiveType::from_bytecode(code[0]) {
+            command.cmd_type = CommandType::Directive(directive);
+        } else if let Some(instruction) = InstructionType::from_bytecode(code[0]) {
+            command.cmd_type = CommandType::Instruction(instruction);
+        }
+        command
+    }
+
     fn is_directive_complete(&self) -> bool {
         !self.operand1.is_none()
     }

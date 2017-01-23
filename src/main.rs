@@ -1,10 +1,12 @@
 mod assembler;
 mod syntax;
 mod tokenizer;
+mod vm;
 
 use std::env;
 use assembler::Assembler;
 use tokenizer::Tokenizer;
+use vm::VM;
 
 fn main() {
     let mut args = env::args();
@@ -17,18 +19,8 @@ fn main() {
         let tokenizer = Tokenizer::new(&filename);
         let (label_table, commands) = Assembler::to_commands(tokenizer);
         let (start, bytecode) = Assembler::to_bytecode(label_table, commands);
-        let mut i: usize = 0;
-        println!("DATA");
-        while i < start {
-            println!("{}", bytecode[i]);
-            i += 1;
-        }
-
-        println!("\nInstructions");
-        while bytecode[i] != 0 {
-            println!("{} {} {}", bytecode[i], bytecode[i + 1], bytecode[i + 2]);
-            i += 3;
-        }
+        let mut vm = VM::new(bytecode);
+        vm.run(start);
     } else {
         panic!("Must provide an input file");
     }
