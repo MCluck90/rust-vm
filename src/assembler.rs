@@ -21,15 +21,15 @@ pub struct Command {
 impl Command {
     pub fn new() -> Command {
         Command {
-            label: Token::None,
+            label: Token::new_none(),
             cmd_type: CommandType::Unknown,
-            operand1: Token::None,
-            operand2: Token::None
+            operand1: Token::new_none(),
+            operand2: Token::new_none()
         }
     }
 
     pub fn add_operand(&mut self, operand: Token) {
-        if self.operand1 == Token::None {
+        if self.operand1.is_none() {
             self.operand1 = operand;
         } else {
             self.operand2 = operand;
@@ -46,7 +46,7 @@ impl Command {
     }
 
     fn is_directive_complete(&self) -> bool {
-        self.operand1 != Token::None
+        !self.operand1.is_none()
     }
 
     fn is_instruction_complete(&self, instruction: &InstructionType) -> bool {
@@ -61,7 +61,7 @@ impl Command {
             &ConvertIntegerToASCII => true,
 
             &Jump |
-            &JumpRelative => self.operand1 != Token::None,
+            &JumpRelative => !self.operand1.is_none(),
 
             &NonZeroJump |
             &GreaterThanZeroJump |
@@ -79,15 +79,8 @@ impl Command {
             &Divide |
             &And |
             &Or |
-            &Equal => self.operand1 != Token::None &&
-                      self.operand2 != Token::None
-        }
-    }
-
-    fn is_label_complete(&self) -> bool {
-        match &self.operand1 {
-            &Token::Label(_) => true,
-            _ => false
+            &Equal => !self.operand1.is_none() &&
+                      !self.operand2.is_none()
         }
     }
 }
@@ -105,8 +98,8 @@ impl Assembler {
                 command = Command::new();
             }
 
-            use tokenizer::Token::*;
-            match token {
+            use tokenizer::TokenType::*;
+            match token.token_type {
                 Instruction(instruction) => {
                     command.cmd_type = CommandType::Instruction(instruction);
                 },
