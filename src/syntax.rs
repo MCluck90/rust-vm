@@ -145,7 +145,8 @@ fn verify_instruction(tokens: &mut Tokenizer, instruction: &InstructionType) -> 
             }
         },
 
-        &InstructionType::Add => {
+        &InstructionType::Add |
+        &InstructionType::AddImmediate => {
             let second_op = tokens.next();
             if !second_op.is_some() {
                 return end_of_file();

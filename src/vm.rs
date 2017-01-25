@@ -29,19 +29,24 @@ impl VM {
             let command = Command::from_bytecode(&bytecode);
             let running = match command.cmd_type {
                 CommandType::Instruction(instruction) =>
-                    self.execute(instruction, command.operand1, command.operand2),
+                    self.execute(instruction, command.operand1, command.operand2, bytecode),
                 _ => false
             };
             if !running {
                 break;
             }
+
+            // TODO: Change `memory` to u8 array and create interpretation method
+            self.registers[PC] += 1;
         }
     }
 
-    fn execute(&mut self, instruction: InstructionType, op1: Token, op2: Token) -> bool {
+    fn execute(&mut self, instruction: InstructionType, op1: Token, op2: Token, bytecode: [i32; 3]) -> bool {
         match instruction {
             InstructionType::End => return false,
-            _ => {}
+            _ => {
+                println!("{:?}", instruction);
+            }
         };
         true
     }

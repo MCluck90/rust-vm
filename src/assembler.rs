@@ -42,6 +42,22 @@ impl Command {
             self.operand1 = operand;
         } else {
             self.operand2 = operand;
+            let mut new_type = CommandType::Unknown;
+            match &self.cmd_type {
+                &CommandType::Instruction(InstructionType::Add) => {
+                    match &self.operand2.token_type {
+                        &TokenType::Integer(_) => {
+                            new_type = CommandType::Instruction(InstructionType::AddImmediate);
+                        },
+                        _ => {}
+                    };
+                },
+                _ => {}
+            };
+
+            if new_type != CommandType::Unknown {
+                self.cmd_type = new_type;
+            }
         }
     }
 
@@ -133,6 +149,7 @@ impl Command {
             &StoreByte |
             &LoadByte |
             &Add |
+            &AddImmediate |
             &Subtract |
             &Multiply |
             &Divide |

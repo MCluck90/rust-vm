@@ -59,6 +59,7 @@ pub enum InstructionType {
     LoadByte,
 
     Add,
+    AddImmediate,
     Subtract,
     Multiply,
     Divide,
@@ -94,16 +95,16 @@ impl ByteCode for InstructionType {
             &InstructionType::StoreByte => 19,
             &InstructionType::LoadByte => 20,
 
-            // TODO: Fix Add immediate
             &InstructionType::Add => 21,
-            &InstructionType::Subtract => 22,
-            &InstructionType::Multiply => 23,
-            &InstructionType::Divide => 24,
+            &InstructionType::AddImmediate => 22,
+            &InstructionType::Subtract => 23,
+            &InstructionType::Multiply => 24,
+            &InstructionType::Divide => 25,
 
-            &InstructionType::And => 25,
-            &InstructionType::Or => 26,
+            &InstructionType::And => 26,
+            &InstructionType::Or => 27,
 
-            &InstructionType::Equal => 27
+            &InstructionType::Equal => 28
         }
     }
 
@@ -132,14 +133,15 @@ impl ByteCode for InstructionType {
             20 => Some(InstructionType::LoadByte),
 
             21 => Some(InstructionType::Add),
-            22 => Some(InstructionType::Subtract),
-            23 => Some(InstructionType::Multiply),
-            24 => Some(InstructionType::Divide),
+            22 => Some(InstructionType::AddImmediate),
+            23 => Some(InstructionType::Subtract),
+            24 => Some(InstructionType::Multiply),
+            25 => Some(InstructionType::Divide),
 
-            25 => Some(InstructionType::And),
-            26 => Some(InstructionType::Or),
+            26 => Some(InstructionType::And),
+            27 => Some(InstructionType::Or),
 
-            27 => Some(InstructionType::Equal),
+            28 => Some(InstructionType::Equal),
             _ => None
         }
     }
@@ -221,7 +223,8 @@ impl fmt::Display for TokenType {
                 &DirectiveType::Word => write!(f, ".word")
             },
             &TokenType::Instruction(ref instruction) => match instruction {
-                &InstructionType::Add => write!(f, "+"),
+                &InstructionType::Add |
+                &InstructionType::AddImmediate => write!(f, "+"),
                 &InstructionType::And => write!(f, "&&"),
                 &InstructionType::ConvertASCIIToInteger => write!(f, "A2I"),
                 &InstructionType::ConvertIntegerToASCII => write!(f, "I2A"),
