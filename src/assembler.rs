@@ -1,5 +1,5 @@
+use byteorder::{ReadBytesExt, WriteBytesExt, LittleEndian};
 use std::collections::HashMap;
-
 use tokenizer::*;
 
 #[derive(Debug, PartialEq)]
@@ -18,7 +18,8 @@ pub struct Command {
 }
 
 pub enum ByteCodeData {
-    Directive(i32),
+    ByteDirective(u8),
+    WordDirective(u16),
     Instruction([i32; 3])
 }
 
@@ -68,8 +69,8 @@ impl Command {
     pub fn to_bytecode(&self, label_table: &HashMap<String, i32>) -> ByteCodeData {
         match &self.cmd_type {
             &CommandType::Directive(_) => match &self.operand1.token_type {
-                &TokenType::Character(c) => ByteCodeData::Directive((c as u8) as i32),
-                &TokenType::Integer(val) => ByteCodeData::Directive(val),
+                &TokenType::Character(c) => ByteCodeData::ByteDirective(c as u8),
+                &TokenType::Integer(val) => ByteCodeData::WordDirective(val as u16),
                 _ => unreachable!()
             },
             &CommandType::Instruction(ref instruction) => {
@@ -200,27 +201,31 @@ impl Assembler {
         (label_addresses, commands)
     }
 
-    pub fn to_bytecode(label_table: HashMap<String, i32>, commands: Vec<Command>) -> (usize, Vec<i32>) {
-        let mut bytecode = vec![0; 10_000];
+    pub fn to_bytecode(label_table: HashMap<String, i32>, commands: Vec<Command>) -> (usize, Vec<u8>) {
+        let mut bytecode = vec![];
         let mut offset = 0;
         let mut start: usize = 0;
         let mut found_start = false;
         for command in commands {
             let code = command.to_bytecode(&label_table);
             match code {
-                ByteCodeData::Directive(data) => {
-                    bytecode[offset] = data;
+                ByteCodeData::ByteDirective(data) => {
+                    bytecode.write_u8(data).unwrap();
                     offset += 1;
+                },
+                ByteCodeData::WordDirective(data) => {
+                    bytecode.write_u16::<LittleEndian>(data).unwrap();
+                    offset += 2;
                 },
                 ByteCodeData::Instruction(data) => {
                     if !found_start {
                         start = offset;
                         found_start = true;
                     }
-                    bytecode[offset]     = data[0];
-                    bytecode[offset + 1] = data[1];
-                    bytecode[offset + 2] = data[2];
-                    offset += 1;
+                    bytecode.write_i32::<LittleEndian>(data[0]).unwrap();
+                    bytecode.write_i32::<LittleEndian>(data[1]).unwrap();
+                    bytecode.write_i32::<LittleEndian>(data[2]).unwrap();
+                    offset += 3;
                 }
             };
         }

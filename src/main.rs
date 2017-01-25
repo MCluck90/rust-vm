@@ -1,3 +1,5 @@
+extern crate byteorder;
+
 mod assembler;
 mod syntax;
 mod tokenizer;
