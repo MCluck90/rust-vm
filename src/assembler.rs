@@ -111,6 +111,26 @@ impl Command {
         if let Some(directive) = DirectiveType::from_bytecode(code[0]) {
             command.cmd_type = CommandType::Directive(directive);
         } else if let Some(instruction) = InstructionType::from_bytecode(code[0]) {
+            match &instruction {
+                &InstructionType::AddImmediate => {
+                    if let Some(register) = Register::from_bytecode(code[1]) {
+                        command.operand1 = Token::new(TokenType::Register(register), 0);
+                    } else {
+                        unreachable!();
+                    }
+
+                    command.operand2 = Token::new(TokenType::Integer(code[2]), 0);
+                },
+
+                // Don't take any arguments
+                &InstructionType::OutputASCII => {},
+                &InstructionType::OutputInteger => {},
+
+                _ => {
+                    println!("Unhandled instruction: {:?}", instruction);
+                    panic!("Unhandled case in Command::from_bytecode");
+                }
+            };
             command.cmd_type = CommandType::Instruction(instruction);
         }
         command

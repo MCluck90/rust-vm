@@ -1,9 +1,7 @@
 use std::fmt;
 use std::marker;
 use std::fs::File;
-use std::io::BufRead;
-use std::io::BufReader;
-use std::io::Lines;
+use std::io::{BufRead, BufReader, Lines};
 use std::iter::Iterator;
 
 pub trait ByteCode where Self: marker::Sized {

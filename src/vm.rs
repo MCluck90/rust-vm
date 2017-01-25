@@ -11,7 +11,7 @@ pub struct VM {
 impl VM {
     pub fn new(code: Vec<u8>) -> VM {
         // Expand available memory
-        let MAX_MEMORY = 10_000_000; // 10MB
+        const MAX_MEMORY: usize = 10_000_000; // 10MB
         let mut memory = vec![0; MAX_MEMORY];
 
         // Copy bytecode into memory
@@ -40,6 +40,7 @@ impl VM {
                     memory.read_i32::<LittleEndian>().unwrap(),
                 ]
             };
+            
             let command = Command::from_bytecode(&bytecode);
             let running = match command.cmd_type {
                 CommandType::Instruction(instruction) =>
@@ -56,6 +57,24 @@ impl VM {
 
     fn execute(&mut self, instruction: InstructionType, op1: Token, op2: Token, bytecode: &[i32; 3]) -> bool {
         match instruction {
+            // Add an immediate value to a register
+            InstructionType::AddImmediate => {
+                let register = bytecode[1] as usize;
+                let value = bytecode[2];
+                self.registers[register] = value;
+            },
+
+            // Print out an ASCII character to stdout
+            InstructionType::OutputASCII => {
+                print!("{}", (self.registers[Register::IO as usize] as u8) as char);
+            },
+
+            // Print out a signed integer to stdout
+            InstructionType::OutputInteger => {
+                print!("{}", self.registers[Register::IO as usize]);
+            },
+
+            // End the program
             InstructionType::End => return false,
             _ => {
                 println!("{:?}", instruction);
