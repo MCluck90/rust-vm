@@ -1,10 +1,5 @@
-use assembler::Command;
-use assembler::CommandType;
-use tokenizer::ByteCode;
-use tokenizer::InstructionType;
-use tokenizer::Register;
-use tokenizer::Token;
-use tokenizer::TokenType;
+use assembler::{Command, CommandType};
+use tokenizer::*;
 
 pub struct VM {
     registers: [i32; 13],

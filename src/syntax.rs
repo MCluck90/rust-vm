@@ -1,8 +1,4 @@
-use tokenizer::DirectiveType;
-use tokenizer::InstructionType;
-use tokenizer::Token;
-use tokenizer::TokenType;
-use tokenizer::Tokenizer;
+use tokenizer::*;
 
 fn end_of_file() -> Option<String> {
     Some(format!("Unexpected end of file"))

@@ -1,11 +1,6 @@
 use std::collections::HashMap;
 
-use tokenizer::ByteCode;
-use tokenizer::InstructionType;
-use tokenizer::DirectiveType;
-use tokenizer::Token;
-use tokenizer::TokenType;
-use tokenizer::Tokenizer;
+use tokenizer::*;
 
 #[derive(Debug, PartialEq)]
 pub enum CommandType {
