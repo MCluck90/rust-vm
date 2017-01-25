@@ -112,6 +112,19 @@ impl Command {
             command.cmd_type = CommandType::Directive(directive);
         } else if let Some(instruction) = InstructionType::from_bytecode(code[0]) {
             match &instruction {
+                &InstructionType::Add => {
+                    if let Some(register) = Register::from_bytecode(code[1]) {
+                        command.operand1 = Token::new(TokenType::Register(register), 0);
+                    } else {
+                        unreachable!();
+                    }
+
+                    if let Some(register) = Register::from_bytecode(code[2]) {
+                        command.operand2 = Token::new(TokenType::Register(register), 0);
+                    } else {
+                        unreachable!();
+                    }
+                },
                 &InstructionType::AddImmediate => {
                     if let Some(register) = Register::from_bytecode(code[1]) {
                         command.operand1 = Token::new(TokenType::Register(register), 0);

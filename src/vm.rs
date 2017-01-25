@@ -40,7 +40,7 @@ impl VM {
                     memory.read_i32::<LittleEndian>().unwrap(),
                 ]
             };
-            
+
             let command = Command::from_bytecode(&bytecode);
             let running = match command.cmd_type {
                 CommandType::Instruction(instruction) =>
@@ -57,6 +57,13 @@ impl VM {
 
     fn execute(&mut self, instruction: InstructionType, op1: Token, op2: Token, bytecode: &[i32; 3]) -> bool {
         match instruction {
+            // Add together two registers and store the result in the first
+            InstructionType::Add => {
+                let destination = bytecode[1] as usize;
+                let source = bytecode[2] as usize;
+                self.registers[destination] += self.registers[source];
+            },
+
             // Add an immediate value to a register
             InstructionType::AddImmediate => {
                 let register = bytecode[1] as usize;
