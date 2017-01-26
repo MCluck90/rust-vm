@@ -96,6 +96,8 @@ impl VM {
                 };
             },
 
+            // Converts an integer value to the equivalent ASCII character
+            // 5 => '5'
             InstructionType::ConvertIntegerToASCII => {
                 let mut integer = self.registers[Register::IO as usize];
                 integer += '0' as i32;
@@ -104,6 +106,13 @@ impl VM {
                 } else {
                     integer
                 };
+            },
+
+            // Perform integer division between two registers
+            InstructionType::Divide => {
+                let destination = bytecode[1] as usize;
+                let source = bytecode[2] as usize;
+                self.registers[destination] /= self.registers[source];
             },
 
             // Print out an ASCII character to stdout
