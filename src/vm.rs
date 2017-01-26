@@ -84,6 +84,16 @@ impl VM {
                 };
             },
 
+            InstructionType::ConvertASCIIToInteger => {
+                let mut ascii = self.registers[Register::IO as usize];
+                ascii -= '0' as i32;
+                self.registers[Register::IO as usize] = if ascii < 0 || ascii > 9 {
+                    -1
+                } else {
+                    ascii
+                };
+            },
+
             // Print out an ASCII character to stdout
             InstructionType::OutputASCII => {
                 print!("{}", (self.registers[Register::IO as usize] as u8) as char);

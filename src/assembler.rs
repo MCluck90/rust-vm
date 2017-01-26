@@ -137,6 +137,7 @@ impl Command {
                 },
 
                 // Don't take any arguments
+                &InstructionType::ConvertASCIIToInteger => {},
                 &InstructionType::End => {},
                 &InstructionType::OutputASCII => {},
                 &InstructionType::OutputInteger => {},
