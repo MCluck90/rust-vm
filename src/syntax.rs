@@ -68,6 +68,18 @@ fn verify_directive(tokens: &mut Tokenizer, directive: &DirectiveType) -> Option
 }
 
 fn verify_instruction(tokens: &mut Tokenizer, instruction: &InstructionType) -> Option<String> {
+    // Skip instructions which take no arguments
+    match instruction {
+        &InstructionType::OutputASCII |
+        &InstructionType::OutputInteger |
+        &InstructionType::InputASCII |
+        &InstructionType::InputInteger |
+        &InstructionType::ConvertASCIIToInteger |
+        &InstructionType::ConvertIntegerToASCII |
+        &InstructionType::End => return None,
+        _ => {}
+    };
+
     let next_token = tokens.next();
     if !next_token.is_some() {
         return match instruction {
