@@ -84,6 +84,8 @@ impl VM {
                 };
             },
 
+            // Converts the ASCII representation of a number to the equivalent integer
+            // '5' => 5
             InstructionType::ConvertASCIIToInteger => {
                 let mut ascii = self.registers[Register::IO as usize];
                 ascii -= '0' as i32;
@@ -91,6 +93,16 @@ impl VM {
                     -1
                 } else {
                     ascii
+                };
+            },
+
+            InstructionType::ConvertIntegerToASCII => {
+                let mut integer = self.registers[Register::IO as usize];
+                integer += '0' as i32;
+                self.registers[Register::IO as usize] = if integer < 48 || integer > 57 {
+                    48
+                } else {
+                    integer
                 };
             },
 
