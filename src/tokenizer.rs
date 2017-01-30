@@ -47,7 +47,7 @@ pub enum InstructionType {
     NonZeroJump,
     GreaterThanZeroJump,
     LessThanZeroJump,
-    EqualZeroJump,
+    CompareZeroJump,
 
     Move,
     LoadAddress,
@@ -65,7 +65,7 @@ pub enum InstructionType {
     And,
     Or,
 
-    Equal
+    Compare
 }
 
 impl ByteCode for InstructionType {
@@ -84,7 +84,7 @@ impl ByteCode for InstructionType {
             &InstructionType::NonZeroJump => 11,
             &InstructionType::GreaterThanZeroJump => 12,
             &InstructionType::LessThanZeroJump => 13,
-            &InstructionType::EqualZeroJump => 14,
+            &InstructionType::CompareZeroJump => 14,
 
             &InstructionType::Move => 15,
             &InstructionType::LoadAddress => 16,
@@ -102,7 +102,7 @@ impl ByteCode for InstructionType {
             &InstructionType::And => 26,
             &InstructionType::Or => 27,
 
-            &InstructionType::Equal => 28
+            &InstructionType::Compare => 28
         }
     }
 
@@ -121,7 +121,7 @@ impl ByteCode for InstructionType {
             11 => Some(InstructionType::NonZeroJump),
             12 => Some(InstructionType::GreaterThanZeroJump),
             13 => Some(InstructionType::LessThanZeroJump),
-            14 => Some(InstructionType::EqualZeroJump),
+            14 => Some(InstructionType::CompareZeroJump),
 
             15 => Some(InstructionType::Move),
             16 => Some(InstructionType::LoadAddress),
@@ -139,7 +139,7 @@ impl ByteCode for InstructionType {
             26 => Some(InstructionType::And),
             27 => Some(InstructionType::Or),
 
-            28 => Some(InstructionType::Equal),
+            28 => Some(InstructionType::Compare),
             _ => None
         }
     }
@@ -228,8 +228,8 @@ impl fmt::Display for TokenType {
                 &InstructionType::ConvertIntegerToASCII => write!(f, "I2A"),
                 &InstructionType::Divide => write!(f, "/"),
                 &InstructionType::End => write!(f, "END"),
-                &InstructionType::Equal => write!(f, "=="),
-                &InstructionType::EqualZeroJump => write!(f, "=0"),
+                &InstructionType::Compare => write!(f, "=="),
+                &InstructionType::CompareZeroJump => write!(f, "=0"),
                 &InstructionType::GreaterThanZeroJump => write!(f, ">0"),
                 &InstructionType::InputASCII => write!(f, "ASCI"),
                 &InstructionType::InputInteger => write!(f, "IN"),
@@ -380,7 +380,7 @@ impl Iterator for Tokenizer {
                             self.line_number
                         ),
                         "=0" => Token::new(
-                            TokenType::Instruction(InstructionType::EqualZeroJump),
+                            TokenType::Instruction(InstructionType::CompareZeroJump),
                             self.line_number
                         ),
 
@@ -436,7 +436,7 @@ impl Iterator for Tokenizer {
                         ),
 
                         "==" => Token::new(
-                            TokenType::Instruction(InstructionType::Equal),
+                            TokenType::Instruction(InstructionType::Compare),
                             self.line_number
                         ),
 

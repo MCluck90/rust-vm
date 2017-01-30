@@ -114,7 +114,8 @@ impl Command {
             match &instruction {
                 &InstructionType::Add |
                 &InstructionType::And |
-                &InstructionType::Divide => {
+                &InstructionType::Divide |
+                &InstructionType::Compare => {
                     if let Some(register) = Register::from_bytecode(code[1]) {
                         command.operand1 = Token::new(TokenType::Register(register), 0);
                     } else {
@@ -175,7 +176,7 @@ impl Command {
             &NonZeroJump |
             &GreaterThanZeroJump |
             &LessThanZeroJump |
-            &EqualZeroJump |
+            &CompareZeroJump |
             &Move |
             &LoadAddress |
             &StoreWord |
@@ -189,7 +190,7 @@ impl Command {
             &Divide |
             &And |
             &Or |
-            &Equal => !self.operand1.is_none() &&
+            &Compare => !self.operand1.is_none() &&
                       !self.operand2.is_none()
         }
     }

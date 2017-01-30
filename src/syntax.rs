@@ -110,7 +110,7 @@ fn verify_instruction(tokens: &mut Tokenizer, instruction: &InstructionType) -> 
         &InstructionType::NonZeroJump |
         &InstructionType::GreaterThanZeroJump |
         &InstructionType::LessThanZeroJump |
-        &InstructionType::EqualZeroJump |
+        &InstructionType::CompareZeroJump |
         &InstructionType::LoadAddress |
         &InstructionType::StoreWord |
         &InstructionType::LoadWord |
@@ -137,7 +137,7 @@ fn verify_instruction(tokens: &mut Tokenizer, instruction: &InstructionType) -> 
         &InstructionType::Divide |
         &InstructionType::And |
         &InstructionType::Or |
-        &InstructionType::Equal => {
+        &InstructionType::Compare => {
             let second_op = tokens.next();
             if !second_op.is_some() {
                 return end_of_file();

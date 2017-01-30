@@ -115,6 +115,24 @@ impl VM {
                 self.registers[destination] /= self.registers[source];
             },
 
+            // Compares the contents of two registers
+            // -1 if the first is less than the second
+            // 1  if the first is greater than the second
+            // 0  if they're Compare
+            InstructionType::Compare => {
+                let reg1 = bytecode[1] as usize;
+                let reg2 = bytecode[2] as usize;
+                let val1 = self.registers[reg1];
+                let val2 = self.registers[reg2];
+                self.registers[reg1] = if val1 < val2 {
+                    -1
+                } else if val1 > val2 {
+                    1
+                } else {
+                    0
+                };
+            },
+
             // Print out an ASCII character to stdout
             InstructionType::OutputASCII => {
                 print!("{}", (self.registers[Register::IO as usize] as u8) as char);
