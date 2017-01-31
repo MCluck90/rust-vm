@@ -128,7 +128,10 @@ impl Command {
                         unreachable!();
                     }
                 },
-                &InstructionType::AddImmediate => {
+                &InstructionType::AddImmediate |
+                // Takes a register and an offset (written as a label)
+
+                &InstructionType::GreaterThanZeroJump => {
                     if let Some(register) = Register::from_bytecode(code[1]) {
                         command.operand1 = Token::new(TokenType::Register(register), 0);
                     } else {

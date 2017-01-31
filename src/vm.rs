@@ -84,6 +84,24 @@ impl VM {
                 };
             },
 
+            // Compares the contents of two registers
+            // -1 if the first is less than the second
+            // 1  if the first is greater than the second
+            // 0  if they're equal
+            InstructionType::Compare => {
+                let reg1 = bytecode[1] as usize;
+                let reg2 = bytecode[2] as usize;
+                let val1 = self.registers[reg1];
+                let val2 = self.registers[reg2];
+                self.registers[reg1] = if val1 < val2 {
+                    -1
+                } else if val1 > val2 {
+                    1
+                } else {
+                    0
+                };
+            },
+
             // Converts the ASCII representation of a number to the equivalent integer
             // '5' => 5
             InstructionType::ConvertASCIIToInteger => {
@@ -115,22 +133,16 @@ impl VM {
                 self.registers[destination] /= self.registers[source];
             },
 
-            // Compares the contents of two registers
-            // -1 if the first is less than the second
-            // 1  if the first is greater than the second
-            // 0  if they're Compare
-            InstructionType::Compare => {
-                let reg1 = bytecode[1] as usize;
-                let reg2 = bytecode[2] as usize;
-                let val1 = self.registers[reg1];
-                let val2 = self.registers[reg2];
-                self.registers[reg1] = if val1 < val2 {
-                    -1
-                } else if val1 > val2 {
-                    1
-                } else {
-                    0
-                };
+            // If the contents of a register are greater than 0
+            // jump to the specified address
+            InstructionType::GreaterThanZeroJump => {
+                let register = bytecode[1] as usize;
+                let address = bytecode[2];
+                // Remove offset that will be automatically applied
+                let address = address - 12;
+                if self.registers[register] > 0 {
+                    self.registers[Register::PC as usize] = address;
+                }
             },
 
             // Print out an ASCII character to stdout
