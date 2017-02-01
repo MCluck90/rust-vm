@@ -158,6 +158,21 @@ impl VM {
                 }
             },
 
+            // Take in a number from the user and store it in the IO register
+            InstructionType::InputInteger => {
+                let mut input = String::new();
+                match io::stdin().read_line(&mut input) {
+                    Ok(_) => {
+                        let num = input.trim().parse::<i32>();
+                        match num {
+                            Ok(n) => self.registers[Register::IO as usize] = n,
+                            Err(err) => println!("error: {}", err)
+                        }
+                    },
+                    Err(err) => println!("error: {}", err)
+                }
+            },
+
             // Print out an ASCII character to stdout
             InstructionType::OutputASCII => {
                 print!("{}", (self.registers[Register::IO as usize] as u8) as char);

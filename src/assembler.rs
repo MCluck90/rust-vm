@@ -146,6 +146,7 @@ impl Command {
                 &InstructionType::ConvertIntegerToASCII |
                 &InstructionType::End |
                 &InstructionType::InputASCII |
+                &InstructionType::InputInteger |
                 &InstructionType::OutputASCII |
                 &InstructionType::OutputInteger => {},
 
