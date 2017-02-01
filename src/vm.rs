@@ -290,6 +290,15 @@ impl VM {
                 memory.write_u8(value);
             },
 
+            // Stores a word of data at a location
+            InstructionType::StoreWord => {
+                let register = bytecode[1] as usize;
+                let address = bytecode[2] as usize;
+                let value = self.registers[register] as u16;
+                let mut memory = &mut self.memory[address..];
+                memory.write_u16::<LittleEndian>(value);
+            },
+
             // End the program
             InstructionType::End => return false,
             _ => {
