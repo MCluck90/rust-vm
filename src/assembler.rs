@@ -135,7 +135,8 @@ impl Command {
                 &InstructionType::GreaterThanZeroJump |
                 &InstructionType::LessThanZeroJump |
                 &InstructionType::LoadAddress |
-                &InstructionType::LoadByte => {
+                &InstructionType::LoadByte |
+                &InstructionType::LoadWord => {
                     if let Some(register) = Register::from_bytecode(code[1]) {
                         command.operand1 = Token::new(TokenType::Register(register), 0);
                     } else {
