@@ -299,6 +299,16 @@ impl VM {
                 memory.write_u16::<LittleEndian>(value);
             },
 
+            // Subtracts the value in register A from register B
+            // and stores it in register A
+            InstructionType::Subtract => {
+                let reg_a = bytecode[1] as usize;
+                let reg_b = bytecode[2] as usize;
+                let val_a = self.registers[reg_a];
+                let val_b = self.registers[reg_b];
+                self.registers[reg_a] = val_a - val_b;
+            },
+
             // End the program
             InstructionType::End => return false,
             _ => {
