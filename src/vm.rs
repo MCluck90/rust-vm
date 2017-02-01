@@ -1,3 +1,4 @@
+use std::io;
 use std::io::Cursor;
 use byteorder::{ReadBytesExt, WriteBytesExt, LittleEndian};
 use assembler::{Command, CommandType};
@@ -142,6 +143,18 @@ impl VM {
                 let address = address - 12;
                 if self.registers[register] > 0 {
                     self.registers[Register::PC as usize] = address;
+                }
+            },
+
+            // Take in a character from the user and store it in the IO register
+            InstructionType::InputASCII => {
+                let mut input = String::new();
+                match io::stdin().read_line(&mut input) {
+                    Ok(_) => {
+                        let character = input.chars().nth(0).unwrap();
+                        self.registers[Register::IO as usize] = character as i32;
+                    },
+                    Err(err) => println!("error: {}", err)
                 }
             },
 
