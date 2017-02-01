@@ -111,15 +111,16 @@ impl Command {
         if let Some(directive) = DirectiveType::from_bytecode(code[0]) {
             command.cmd_type = CommandType::Directive(directive);
         } else if let Some(instruction) = InstructionType::from_bytecode(code[0]) {
-            match &instruction {
-                &InstructionType::Add |
-                &InstructionType::And |
-                &InstructionType::Divide |
-                &InstructionType::Compare |
-                &InstructionType::Move |
-                &InstructionType::Multiply |
-                &InstructionType::Or |
-                &InstructionType::Subtract => {
+            use tokenizer::InstructionType::*;
+            match *&instruction {
+                Add |
+                And |
+                Divide |
+                Compare |
+                Move |
+                Multiply |
+                Or |
+                Subtract => {
                     if let Some(register) = Register::from_bytecode(code[1]) {
                         command.operand1 = Token::new(TokenType::Register(register), 0);
                     } else {
@@ -135,16 +136,16 @@ impl Command {
 
                 // Takes a register and an offset (written as a label)
                 // or a register and an immediate value
-                &InstructionType::AddImmediate |
-                &InstructionType::CompareZeroJump |
-                &InstructionType::GreaterThanZeroJump |
-                &InstructionType::LessThanZeroJump |
-                &InstructionType::LoadAddress |
-                &InstructionType::LoadByte |
-                &InstructionType::LoadWord |
-                &InstructionType::NonZeroJump |
-                &InstructionType::StoreByte |
-                &InstructionType::StoreWord => {
+                AddImmediate |
+                CompareZeroJump |
+                GreaterThanZeroJump |
+                LessThanZeroJump |
+                LoadAddress |
+                LoadByte |
+                LoadWord |
+                NonZeroJump |
+                StoreByte |
+                StoreWord => {
                     if let Some(register) = Register::from_bytecode(code[1]) {
                         command.operand1 = Token::new(TokenType::Register(register), 0);
                     } else {
@@ -155,12 +156,12 @@ impl Command {
                 },
 
                 // Only takes an address (label)
-                &InstructionType::Jump => {
+                Jump => {
                     command.operand1 = Token::new(TokenType::Integer(code[1]), 0);
                 },
 
                 // Only takes a register
-                &InstructionType::JumpRelative => {
+                JumpRelative => {
                     if let Some(register) = Register::from_bytecode(code[1]) {
                         command.operand1 = Token::new(TokenType::Register(register), 0);
                     } else {
@@ -169,13 +170,13 @@ impl Command {
                 },
 
                 // Don't take any arguments
-                &InstructionType::ConvertASCIIToInteger |
-                &InstructionType::ConvertIntegerToASCII |
-                &InstructionType::End |
-                &InstructionType::InputASCII |
-                &InstructionType::InputInteger |
-                &InstructionType::OutputASCII |
-                &InstructionType::OutputInteger => {}
+                ConvertASCIIToInteger |
+                ConvertIntegerToASCII |
+                End |
+                InputASCII |
+                InputInteger |
+                OutputASCII |
+                OutputInteger => {}
             };
             command.cmd_type = CommandType::Instruction(instruction);
         }
@@ -188,36 +189,36 @@ impl Command {
 
     fn is_instruction_complete(&self, instruction: &InstructionType) -> bool {
         use tokenizer::InstructionType::*;
-        match instruction {
-            &End |
-            &OutputInteger |
-            &InputInteger |
-            &OutputASCII |
-            &InputASCII |
-            &ConvertASCIIToInteger |
-            &ConvertIntegerToASCII => true,
+        match *instruction {
+            End |
+            OutputInteger |
+            InputInteger |
+            OutputASCII |
+            InputASCII |
+            ConvertASCIIToInteger |
+            ConvertIntegerToASCII => true,
 
-            &Jump |
-            &JumpRelative => !self.operand1.is_none(),
+            Jump |
+            JumpRelative => !self.operand1.is_none(),
 
-            &NonZeroJump |
-            &GreaterThanZeroJump |
-            &LessThanZeroJump |
-            &CompareZeroJump |
-            &Move |
-            &LoadAddress |
-            &StoreWord |
-            &LoadWord |
-            &StoreByte |
-            &LoadByte |
-            &Add |
-            &AddImmediate |
-            &Subtract |
-            &Multiply |
-            &Divide |
-            &And |
-            &Or |
-            &Compare => !self.operand1.is_none() &&
+            NonZeroJump |
+            GreaterThanZeroJump |
+            LessThanZeroJump |
+            CompareZeroJump |
+            Move |
+            LoadAddress |
+            StoreWord |
+            LoadWord |
+            StoreByte |
+            LoadByte |
+            Add |
+            AddImmediate |
+            Subtract |
+            Multiply |
+            Divide |
+            And |
+            Or |
+            Compare => !self.operand1.is_none() &&
                       !self.operand2.is_none()
         }
     }

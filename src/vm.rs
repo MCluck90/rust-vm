@@ -57,23 +57,24 @@ impl VM {
     }
 
     fn execute(&mut self, instruction: InstructionType, bytecode: &[i32; 3]) -> bool {
+        use tokenizer::InstructionType::*;
         match instruction {
             // Add together two registers and store the result in the first
-            InstructionType::Add => {
+            Add => {
                 let destination = bytecode[1] as usize;
                 let source = bytecode[2] as usize;
                 self.registers[destination] += self.registers[source];
             },
 
             // Add an immediate value to a register
-            InstructionType::AddImmediate => {
+            AddImmediate => {
                 let register = bytecode[1] as usize;
                 let value = bytecode[2];
                 self.registers[register] += value;
             },
 
             // Perform a boolean AND on two registers
-            InstructionType::And => {
+            And => {
                 let reg1 = bytecode[1] as usize;
                 let reg2 = bytecode[2] as usize;
                 let reg1_value = self.registers[reg1];
@@ -89,7 +90,7 @@ impl VM {
             // -1 if the first is less than the second
             // 1  if the first is greater than the second
             // 0  if they're equal
-            InstructionType::Compare => {
+            Compare => {
                 let reg1 = bytecode[1] as usize;
                 let reg2 = bytecode[2] as usize;
                 let val1 = self.registers[reg1];
@@ -104,7 +105,7 @@ impl VM {
             },
 
             // Jumps to an address if the given register contains a zero value
-            InstructionType::CompareZeroJump => {
+            CompareZeroJump => {
                 let register = bytecode[1] as usize;
                 let address = bytecode[2];
                 // Remove offset that will be automatically applied
@@ -116,7 +117,7 @@ impl VM {
 
             // Converts the ASCII representation of a number to the equivalent integer
             // '5' => 5
-            InstructionType::ConvertASCIIToInteger => {
+            ConvertASCIIToInteger => {
                 let mut ascii = self.registers[Register::IO as usize];
                 ascii -= '0' as i32;
                 self.registers[Register::IO as usize] = if ascii < 0 || ascii > 9 {
@@ -128,7 +129,7 @@ impl VM {
 
             // Converts an integer value to the equivalent ASCII character
             // 5 => '5'
-            InstructionType::ConvertIntegerToASCII => {
+            ConvertIntegerToASCII => {
                 let mut integer = self.registers[Register::IO as usize];
                 integer += '0' as i32;
                 self.registers[Register::IO as usize] = if integer < 48 || integer > 57 {
@@ -139,7 +140,7 @@ impl VM {
             },
 
             // Perform integer division between two registers
-            InstructionType::Divide => {
+            Divide => {
                 let destination = bytecode[1] as usize;
                 let source = bytecode[2] as usize;
                 self.registers[destination] /= self.registers[source];
@@ -147,7 +148,7 @@ impl VM {
 
             // If the contents of a register are greater than 0
             // jump to the specified address
-            InstructionType::GreaterThanZeroJump => {
+            GreaterThanZeroJump => {
                 let register = bytecode[1] as usize;
                 let address = bytecode[2];
                 // Remove offset that will be automatically applied
@@ -158,7 +159,7 @@ impl VM {
             },
 
             // Take in a character from the user and store it in the IO register
-            InstructionType::InputASCII => {
+            InputASCII => {
                 let mut input = String::new();
                 match io::stdin().read_line(&mut input) {
                     Ok(_) => {
@@ -170,7 +171,7 @@ impl VM {
             },
 
             // Take in a number from the user and store it in the IO register
-            InstructionType::InputInteger => {
+            InputInteger => {
                 let mut input = String::new();
                 match io::stdin().read_line(&mut input) {
                     Ok(_) => {
@@ -185,7 +186,7 @@ impl VM {
             },
 
             // Jump directly to an address
-            InstructionType::Jump => {
+            Jump => {
                 let address = bytecode[1];
 
                 // Remove offset that will be automatically applied
@@ -194,7 +195,7 @@ impl VM {
             },
 
             // Jumps to an address stored in a register
-            InstructionType::JumpRelative => {
+            JumpRelative => {
                 let register = bytecode[1] as usize;
                 let address = self.registers[register];
 
@@ -205,7 +206,7 @@ impl VM {
 
             // If the contents of a register are less than 0
             // jump to the specified address
-            InstructionType::LessThanZeroJump => {
+            LessThanZeroJump => {
                 let register = bytecode[1] as usize;
                 let address = bytecode[2];
                 // Remove offset that will be automatically applied
@@ -216,14 +217,14 @@ impl VM {
             },
 
             // Loads the address of a label into a register
-            InstructionType::LoadAddress => {
+            LoadAddress => {
                 let register = bytecode[1] as usize;
                 let address = bytecode[2];
                 self.registers[register] = address;
             },
 
             // Load a byte of data from memory and place it into a register
-            InstructionType::LoadByte => {
+            LoadByte => {
                 let register = bytecode[1] as usize;
                 let address = bytecode[2] as usize;
                 let mut memory = Cursor::new(&mut self.memory[address..]);
@@ -232,7 +233,7 @@ impl VM {
             },
 
             // Load a word of data from memory and place it into a register
-            InstructionType::LoadWord => {
+            LoadWord => {
                 let register = bytecode[1] as usize;
                 let address = bytecode[2] as usize;
                 let mut memory = Cursor::new(&mut self.memory[address..]);
@@ -241,7 +242,7 @@ impl VM {
             },
 
             // Copy a value from register B and place it in register A
-            InstructionType::Move => {
+            Move => {
                 let reg_a = bytecode[1] as usize;
                 let reg_b = bytecode[2] as usize;
                 let val_b = self.registers[reg_b];
@@ -249,7 +250,7 @@ impl VM {
             },
 
             // Multiply the values in two registers together and store it in the first
-            InstructionType::Multiply => {
+            Multiply => {
                 let reg_a = bytecode[1] as usize;
                 let reg_b = bytecode[2] as usize;
                 let val_a = self.registers[reg_a];
@@ -258,7 +259,7 @@ impl VM {
             },
 
             // Jumps to an address if the given register contains a non-zero value
-            InstructionType::NonZeroJump => {
+            NonZeroJump => {
                 let register = bytecode[1] as usize;
                 let address = bytecode[2];
                 // Remove offset that will be automatically applied
@@ -270,7 +271,7 @@ impl VM {
 
             // If one of the registers contains a non-zero value, store 1
             // Otherwise, store 0 in the first register
-            InstructionType::Or => {
+            Or => {
                 let reg1 = bytecode[1] as usize;
                 let reg2 = bytecode[2] as usize;
                 let reg1_value = self.registers[reg1];
@@ -283,17 +284,17 @@ impl VM {
             },
 
             // Print out an ASCII character to stdout
-            InstructionType::OutputASCII => {
+            OutputASCII => {
                 print!("{}", (self.registers[Register::IO as usize] as u8) as char);
             },
 
             // Print out a signed integer to stdout
-            InstructionType::OutputInteger => {
+            OutputInteger => {
                 print!("{}", self.registers[Register::IO as usize]);
             },
 
             // Stores a byte of data at a location
-            InstructionType::StoreByte => {
+            StoreByte => {
                 let register = bytecode[1] as usize;
                 let address = bytecode[2] as usize;
                 let value = self.registers[register] as u8;
@@ -302,7 +303,7 @@ impl VM {
             },
 
             // Stores a word of data at a location
-            InstructionType::StoreWord => {
+            StoreWord => {
                 let register = bytecode[1] as usize;
                 let address = bytecode[2] as usize;
                 let value = self.registers[register] as u16;
@@ -312,7 +313,7 @@ impl VM {
 
             // Subtracts the value in register A from register B
             // and stores it in register A
-            InstructionType::Subtract => {
+            Subtract => {
                 let reg_a = bytecode[1] as usize;
                 let reg_b = bytecode[2] as usize;
                 let val_a = self.registers[reg_a];
@@ -321,7 +322,7 @@ impl VM {
             },
 
             // End the program
-            InstructionType::End => return false
+            End => return false
         };
         true
     }

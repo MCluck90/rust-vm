@@ -3,27 +3,27 @@ label  .byte 'A'
 label2 .word 10
 
 # Jumps
-JMP label         # JMP
-JMR reg_1         # JMR
-!0  reg_1 label   # BNZ
->0  reg_1 label   # BGT
-<0  reg_1 label   # BLT
-=0  reg_1 label   # BRZ
+JMP label
+JMR reg_1
+!0  reg_1 label
+>0  reg_1 label
+<0  reg_1 label
+=0  reg_1 label
 
 # Moves
-MOV reg_1 reg_2   # MOV
-LDA reg_1 label   # LDA
-STW reg_1 label   # STR ("store word")
-LDW reg_1 label   # LDR ("load word")
-STB reg_1 label   # STB
-LDB reg_1 label   # LDB
+MOV reg_1 reg_2
+LDA reg_1 label
+STW reg_1 label
+LDW reg_1 label
+STB reg_1 label
+LDB reg_1 label
 
 # Arithmetic
-+   reg_1 reg_2   # ADD
-+   reg_1 10      # ADI
--   reg_1 reg_2   # SUB
-*   reg_1 reg_2   # MUL
-/   reg_1 reg_2   # DIV
++   reg_1 reg_2
++   reg_1 10
+-   reg_1 reg_2
+*   reg_1 reg_2
+/   reg_1 reg_2
 
 # Logical
 &&  reg_1 reg_2
@@ -33,10 +33,10 @@ LDB reg_1 label   # LDB
 == reg_1 reg_2
 
 # Commands
-OUT   # Output number (IO register)
-IN    # Get number over stdin (IO register)
-ASCO  # Output an ASCII character (IO register)
-ASCI  # Get ASCII character over stdin (IO register)
-A2I   # ASCII to Integer (IO register)
-I2A   # Integer to ASCII (IO register)
-END   # End the program
+OUT
+IN
+ASCO
+ASCI
+A2I
+I2A
+END
