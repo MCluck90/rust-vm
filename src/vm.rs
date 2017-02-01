@@ -103,6 +103,17 @@ impl VM {
                 };
             },
 
+            // Jumps to an address if the given register contains a zero value
+            InstructionType::CompareZeroJump => {
+                let register = bytecode[1] as usize;
+                let address = bytecode[2];
+                // Remove offset that will be automatically applied
+                let address = address - 12;
+                if self.registers[register] == 0 {
+                    self.registers[Register::PC as usize] = address;
+                }
+            },
+
             // Converts the ASCII representation of a number to the equivalent integer
             // '5' => 5
             InstructionType::ConvertASCIIToInteger => {
@@ -310,10 +321,7 @@ impl VM {
             },
 
             // End the program
-            InstructionType::End => return false,
-            _ => {
-                println!("{:?}", instruction);
-            }
+            InstructionType::End => return false
         };
         true
     }

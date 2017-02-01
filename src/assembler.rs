@@ -136,6 +136,7 @@ impl Command {
                 // Takes a register and an offset (written as a label)
                 // or a register and an immediate value
                 &InstructionType::AddImmediate |
+                &InstructionType::CompareZeroJump |
                 &InstructionType::GreaterThanZeroJump |
                 &InstructionType::LessThanZeroJump |
                 &InstructionType::LoadAddress |
@@ -174,12 +175,7 @@ impl Command {
                 &InstructionType::InputASCII |
                 &InstructionType::InputInteger |
                 &InstructionType::OutputASCII |
-                &InstructionType::OutputInteger => {},
-
-                _ => {
-                    println!("Unhandled instruction: {:?}", instruction);
-                    panic!("Unhandled case in Command::from_bytecode");
-                }
+                &InstructionType::OutputInteger => {}
             };
             command.cmd_type = CommandType::Instruction(instruction);
         }
