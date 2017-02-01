@@ -146,6 +146,15 @@ impl Command {
                     command.operand1 = Token::new(TokenType::Integer(code[1]), 0);
                 },
 
+                // Only takes a register
+                &InstructionType::JumpRelative => {
+                    if let Some(register) = Register::from_bytecode(code[1]) {
+                        command.operand1 = Token::new(TokenType::Register(register), 0);
+                    } else {
+                        unreachable!();
+                    }
+                },
+
                 // Don't take any arguments
                 &InstructionType::ConvertASCIIToInteger |
                 &InstructionType::ConvertIntegerToASCII |
