@@ -237,6 +237,15 @@ impl VM {
                 self.registers[reg_a] = val_b;
             },
 
+            // Multiply the values in two registers together and store it in the first
+            InstructionType::Multiply => {
+                let reg_a = bytecode[1] as usize;
+                let reg_b = bytecode[2] as usize;
+                let val_a = self.registers[reg_a];
+                let val_b = self.registers[reg_b];
+                self.registers[reg_a] = val_a * val_b;
+            },
+
             // Print out an ASCII character to stdout
             InstructionType::OutputASCII => {
                 print!("{}", (self.registers[Register::IO as usize] as u8) as char);
