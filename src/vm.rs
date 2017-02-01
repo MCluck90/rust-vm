@@ -211,6 +211,15 @@ impl VM {
                 self.registers[register] = address;
             },
 
+            // Let a byte of data from memory and place it into a register
+            InstructionType::LoadByte => {
+                let register = bytecode[1] as usize;
+                let address = bytecode[2] as usize;
+                let mut memory = Cursor::new(&mut self.memory[address..]);
+                let value = memory.read_u8().unwrap();
+                self.registers[register] = value as i32;
+            },
+
             // Print out an ASCII character to stdout
             InstructionType::OutputASCII => {
                 print!("{}", (self.registers[Register::IO as usize] as u8) as char);
