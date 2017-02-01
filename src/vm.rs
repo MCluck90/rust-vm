@@ -204,6 +204,13 @@ impl VM {
                 }
             },
 
+            // Loads the address of a label into a register
+            InstructionType::LoadAddress => {
+                let register = bytecode[1] as usize;
+                let address = bytecode[2];
+                self.registers[register] = address;
+            },
+
             // Print out an ASCII character to stdout
             InstructionType::OutputASCII => {
                 print!("{}", (self.registers[Register::IO as usize] as u8) as char);
