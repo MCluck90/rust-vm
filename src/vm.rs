@@ -246,6 +246,17 @@ impl VM {
                 self.registers[reg_a] = val_a * val_b;
             },
 
+            // Jumps to an address if the given register contains a non-zero value
+            InstructionType::NonZeroJump => {
+                let register = bytecode[1] as usize;
+                let address = bytecode[2];
+                // Remove offset that will be automatically applied
+                let address = address - 12;
+                if self.registers[register] != 0 {
+                    self.registers[Register::PC as usize] = address;
+                }
+            },
+
             // Print out an ASCII character to stdout
             InstructionType::OutputASCII => {
                 print!("{}", (self.registers[Register::IO as usize] as u8) as char);
