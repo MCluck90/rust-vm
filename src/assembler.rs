@@ -1,4 +1,4 @@
-use byteorder::{ReadBytesExt, WriteBytesExt, LittleEndian};
+use byteorder::{WriteBytesExt, LittleEndian};
 use std::collections::HashMap;
 use tokenizer::*;
 

@@ -45,7 +45,7 @@ impl VM {
             let command = Command::from_bytecode(&bytecode);
             let running = match command.cmd_type {
                 CommandType::Instruction(instruction) =>
-                    self.execute(instruction, command.operand1, command.operand2, &bytecode),
+                    self.execute(instruction, &bytecode),
                 _ => false
             };
             if !running {
@@ -56,7 +56,7 @@ impl VM {
         }
     }
 
-    fn execute(&mut self, instruction: InstructionType, op1: Token, op2: Token, bytecode: &[i32; 3]) -> bool {
+    fn execute(&mut self, instruction: InstructionType, bytecode: &[i32; 3]) -> bool {
         match instruction {
             // Add together two registers and store the result in the first
             InstructionType::Add => {
@@ -298,7 +298,7 @@ impl VM {
                 let address = bytecode[2] as usize;
                 let value = self.registers[register] as u8;
                 let mut memory = &mut self.memory[address..];
-                memory.write_u8(value);
+                let _ = memory.write_u8(value);
             },
 
             // Stores a word of data at a location
@@ -307,7 +307,7 @@ impl VM {
                 let address = bytecode[2] as usize;
                 let value = self.registers[register] as u16;
                 let mut memory = &mut self.memory[address..];
-                memory.write_u16::<LittleEndian>(value);
+                let _ = memory.write_u16::<LittleEndian>(value);
             },
 
             // Subtracts the value in register A from register B
