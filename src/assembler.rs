@@ -129,8 +129,8 @@ impl Command {
                     }
                 },
                 &InstructionType::AddImmediate |
-                // Takes a register and an offset (written as a label)
 
+                // Takes a register and an offset (written as a label)
                 &InstructionType::GreaterThanZeroJump => {
                     if let Some(register) = Register::from_bytecode(code[1]) {
                         command.operand1 = Token::new(TokenType::Register(register), 0);
@@ -139,6 +139,11 @@ impl Command {
                     }
 
                     command.operand2 = Token::new(TokenType::Integer(code[2]), 0);
+                },
+
+                // Only takes an address (label)
+                &InstructionType::Jump => {
+                    command.operand1 = Token::new(TokenType::Integer(code[1]), 0);
                 },
 
                 // Don't take any arguments

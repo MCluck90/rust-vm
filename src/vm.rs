@@ -173,6 +173,14 @@ impl VM {
                 }
             },
 
+            // Jump directly to an address
+            InstructionType::Jump => {
+                let address = bytecode[1];
+                // Remove offset that will be automatically applied
+                let address = address - 12;
+                self.registers[Register::PC as usize] = address;
+            },
+
             // Print out an ASCII character to stdout
             InstructionType::OutputASCII => {
                 print!("{}", (self.registers[Register::IO as usize] as u8) as char);
