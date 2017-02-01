@@ -176,7 +176,7 @@ impl VM {
             // Jump directly to an address
             InstructionType::Jump => {
                 let address = bytecode[1];
-                
+
                 // Remove offset that will be automatically applied
                 let address = address - 12;
                 self.registers[Register::PC as usize] = address;
@@ -190,6 +190,18 @@ impl VM {
                 // Remove offset that will be automatically applied
                 let address = address - 12;
                 self.registers[Register::PC as usize] = address;
+            },
+
+            // If the contents of a register are less than 0
+            // jump to the specified address
+            InstructionType::LessThanZeroJump => {
+                let register = bytecode[1] as usize;
+                let address = bytecode[2];
+                // Remove offset that will be automatically applied
+                let address = address - 12;
+                if self.registers[register] < 0 {
+                    self.registers[Register::PC as usize] = address;
+                }
             },
 
             // Print out an ASCII character to stdout
