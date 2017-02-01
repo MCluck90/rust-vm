@@ -229,6 +229,14 @@ impl VM {
                 self.registers[register] = value as i32;
             },
 
+            // Copy a value from register B and place it in register A
+            InstructionType::Move => {
+                let reg_a = bytecode[1] as usize;
+                let reg_b = bytecode[2] as usize;
+                let val_b = self.registers[reg_b];
+                self.registers[reg_a] = val_b;
+            },
+
             // Print out an ASCII character to stdout
             InstructionType::OutputASCII => {
                 print!("{}", (self.registers[Register::IO as usize] as u8) as char);
