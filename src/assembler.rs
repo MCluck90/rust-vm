@@ -117,7 +117,8 @@ impl Command {
                 &InstructionType::Divide |
                 &InstructionType::Compare |
                 &InstructionType::Move |
-                &InstructionType::Multiply => {
+                &InstructionType::Multiply |
+                &InstructionType::Or => {
                     if let Some(register) = Register::from_bytecode(code[1]) {
                         command.operand1 = Token::new(TokenType::Register(register), 0);
                     } else {

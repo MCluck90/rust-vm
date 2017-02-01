@@ -257,6 +257,20 @@ impl VM {
                 }
             },
 
+            // If one of the registers contains a non-zero value, store 1
+            // Otherwise, store 0 in the first register
+            InstructionType::Or => {
+                let reg1 = bytecode[1] as usize;
+                let reg2 = bytecode[2] as usize;
+                let reg1_value = self.registers[reg1];
+                let reg2_value = self.registers[reg2];
+                self.registers[reg1] = if reg1_value != 0 || reg2_value != 0 {
+                    1
+                } else {
+                    0
+                };
+            },
+
             // Print out an ASCII character to stdout
             InstructionType::OutputASCII => {
                 print!("{}", (self.registers[Register::IO as usize] as u8) as char);
