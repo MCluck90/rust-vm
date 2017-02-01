@@ -281,6 +281,15 @@ impl VM {
                 print!("{}", self.registers[Register::IO as usize]);
             },
 
+            // Stores a byte of data at a location
+            InstructionType::StoreByte => {
+                let register = bytecode[1] as usize;
+                let address = bytecode[2] as usize;
+                let value = self.registers[register] as u8;
+                let mut memory = &mut self.memory[address..];
+                memory.write_u8(value);
+            },
+
             // End the program
             InstructionType::End => return false,
             _ => {

@@ -140,7 +140,8 @@ impl Command {
                 &InstructionType::LoadAddress |
                 &InstructionType::LoadByte |
                 &InstructionType::LoadWord |
-                &InstructionType::NonZeroJump => {
+                &InstructionType::NonZeroJump |
+                &InstructionType::StoreByte => {
                     if let Some(register) = Register::from_bytecode(code[1]) {
                         command.operand1 = Token::new(TokenType::Register(register), 0);
                     } else {
