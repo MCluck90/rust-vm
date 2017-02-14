@@ -66,4 +66,46 @@ JMR reg_1
 =0  reg_1 label
 ```
 
-_More instructions available, will be documented later_
+## Moves
+
+`MOV`: Copy data from the second register into the first register
+
+### Example
+```asm
+MOV reg_1 reg_2
+```
+
+`LDA`: Load the address of a label into a register
+
+### Example
+```asm
+LDA reg_1 label
+```
+
+`STW`: Store a word of data at a label
+
+### Example
+```asm
+STW reg_1 label
+```
+
+`LDW`: Loads a word of data from a label into a register
+
+### Example
+```asm
+LDW reg_1 label
+```
+
+`STB`: Store a byte of data at a label
+
+### Example
+```asm
+STB reg_1 label
+```
+
+`LDB`: Load a byte of data from a label
+
+### Example
+```asm
+LDB reg_1 label
+```
